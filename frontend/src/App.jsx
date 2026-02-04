@@ -1,35 +1,84 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
 
-function App() {
-  const [count, setCount] = useState(0)
+import './App.css';
+import { BrowserRouter, Route, Router, Routes } from 'react-router-dom';
+import Home from './pages/Home';
+import Navbar from './components/layout/Navbar';
+import Footer from './components/layout/Footer';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import Venue from './pages/Venue';
+import Menu from './pages/Menu';
+import Booking from './pages/Booking';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+function ProtectedRoute({ children, requireAuth = true }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-burgundy-600"></div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    );
+  }
+
+  if (requireAuth && !user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!requireAuth && user) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
 }
 
-export default App
+function App() {
+  return (
+    <>
+      <BrowserRouter>
+        <AuthProvider>
+          <div className="flex flex-col min-h-screen">
+            <Navbar />
+            <main className="grow">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/venue" element={<Venue />} />
+                <Route path="/menu" element={<Menu />} />
+                <Route
+                  path="/booking"
+                  element={
+                    <ProtectedRoute>
+                      <Booking />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/login"
+                  element={
+                    <ProtectedRoute requireAuth={false}>
+                      <Login />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/register"
+                  element={
+                    <ProtectedRoute requireAuth={false}>
+                      <Register />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </AuthProvider>
+      </BrowserRouter>
+    </>
+  );
+}
+
+export default App;

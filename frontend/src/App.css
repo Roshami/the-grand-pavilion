@@ -1,42 +1,60 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+@theme{
+  --color-primary-50:#fff9f0;
+  --color-primary-100:#ffe8cc;
+  --color-primary-200:#ffd399;
+  --color-primary-300:#ffb966;
+  --color-primary-400:#ff9a33;
+  --color-primary-500:#ff7a00;
+  --color-primary-600:#e66c00;
+  --color-primary-700:#b35400;
+  --color-primary-800:#803c00;
+  --color-primary-900:#4d2300;
+
+  --color-burgundy-50:#fef2f2;
+  --color-burgundy-100:#fee2e2;
+  --color-burgundy-200:#fecaca;
+  --color-burgundy-300:#fca5a5;
+  --color-burgundy-400:#f87171;
+  --color-burgundy-500:#ef4444;
+  --color-burgundy-600:#dc2626;
+  --color-burgundy-700:#b91c1c;
+  --color-burgundy-800:#991b1b;
+  --color-burgundy-900:#8b0000;
+
+  --color-gold-50:#fffbf0;
+  --color-gold-100:#fef3c7;
+  --color-gold-200:#fde68a;
+  --color-gold-300:#fcd34d;
+  --color-gold-400:#fbbf24;
+  --color-gold-500:#f59e0b;
+  --color-gold-600:#d97706;
+  --color-gold-700:#b45309;
+  --color-gold-800:#92400e;
+  --color-gold-900:#78350f;
+
+  --font-display: 'serif', 'sans-serif';
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+::-webkit-scrollbar-thumb {
+  background: #8b0000;
+  border-radius: 5px;
 }
 
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+::-webkit-scrollbar-thumb:hover {
+  background: #660000;
 }
