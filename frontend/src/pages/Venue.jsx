@@ -21,7 +21,7 @@ export default function Venue() {
           api.get('/facilities'),
         ]);
         console.log(venueRes.data.data);
-        setVenueInfo(venueRes.data.data);
+        setVenueInfo('venueInfo' + venueRes.data.data);
         console.log(facilitiesRes.data.data);
         setFacilities(facilitiesRes.data.data);
         setLoading(false);
@@ -62,16 +62,24 @@ export default function Venue() {
                 <h3 className="text-lg font-bold text-burgundy-800 mb-2">
                   Contact
                 </h3>
-                <p className="text-gray-600">{venueInfo.contact.phone}</p>
-                <p className="text-gray-600">{venueInfo.contact.email}</p>
+                <p className="text-gray-600">
+                  {venueInfo?.contact?.phone || '+94 11 234 5678'}
+                </p>
+                <p className="text-gray-600">
+                  {venueInfo?.contact?.email || 'info@grandpavilion.lk'}
+                </p>
               </div>
               <div>
                 <h3 className="text-lg font-bold text-burgundy-800 mb-2">
                   Address
                 </h3>
-                <p className="text-gray-600">{venueInfo.address.street}</p>
                 <p className="text-gray-600">
-                  {venueInfo.address.city}, {venueInfo.address.postalCode}
+                  {venueInfo?.address?.street || '123 Main Street'}
+                </p>
+                <p className="text-gray-600">
+                  {venueInfo?.address?.city
+                    ? `${venueInfo.address.city}, ${venueInfo.address.postalCode}`
+                    : 'Colombo 00100'}
                 </p>
               </div>
               <div>

@@ -12,19 +12,32 @@ export default function Menu() {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    const fetchMenu = async () => {
-      try {
-        const res = await api.get('/restaurant/menu');
-        setMenu(res.data.data);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to load menu');
-        setLoading(false);
+  const fetchMenu = async () => {
+    try {
+      const res = await api.get('/restaurant/menu');
+      
+      // ✅ FIX: Backend returns { menu: [...] }, NOT { data: [...] }
+      const menuData = res.data.menu || res.data.data || [];
+      
+      // Safety check: Ensure it's an array
+      if (Array.isArray(menuData)) {
+        setMenu(menuData);
+      } else {
+        setMenu([]);
+        console.warn('Menu data is not an array, setting to empty array');
       }
-    };
+      
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching menu:', err);
+      setError('Failed to load menu. Please try again later.');
+      setLoading(false);
+      setMenu([]); // Always keep as array
+    }
+  };
 
-    fetchMenu();
-  }, []);
+  fetchMenu();
+}, []);
 
   if (loading) return <LoadingSpinner />;
   if (error)

@@ -62,6 +62,16 @@ export default function Navbar() {
                 >
                   My Bookings
                 </Link>
+                {/* Admin Link - Only show if user is admin */}
+                {user.role === 'admin' && (
+                  <Link
+                    to="/admin"
+                    className="text-gray-700 hover:text-burgundy-600 font-medium"
+                  >
+                    Admin
+                  </Link>
+                )}
+
                 <button
                   onClick={handleLogout}
                   className="bg-burgundy-600 text-white px-4 py-2 rounded-md hover:bg-burgundy-700 transition"
