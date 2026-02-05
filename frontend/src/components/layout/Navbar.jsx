@@ -56,19 +56,20 @@ export default function Navbar() {
 
             {user ? (
               <>
-                <Link
-                  to="/my-bookings"
-                  className="text-gray-700 hover:text-burgundy-600 font-medium"
-                >
-                  My Bookings
-                </Link>
                 {/* Admin Link - Only show if user is admin */}
-                {user.role === 'admin' && (
+                {user.role === 'admin' ? (
                   <Link
                     to="/admin"
                     className="text-gray-700 hover:text-burgundy-600 font-medium"
                   >
                     Admin
+                  </Link>
+                ) : (
+                  <Link
+                    to="/my-bookings"
+                    className="text-gray-700 hover:text-burgundy-600 font-medium"
+                  >
+                    My Bookings
                   </Link>
                 )}
 

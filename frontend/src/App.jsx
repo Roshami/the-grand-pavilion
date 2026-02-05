@@ -24,6 +24,14 @@ import Admin from './pages/Admin'; // ADD THIS
 // Layout Components
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminBookings from './pages/AdminBookings';
+import AdminFacilities from './pages/AdminFacilities';
+import AdminMenu from './pages/AdminMenu';
+import AdminUsers from './pages/AdminUsers';
+import AdminReports from './pages/AdminReports';
+import AdminSettings from './pages/AdminSettings';
+import AdminLayout from './components/layout/AdminLayout';
 
 function ProtectedRoute({
   children,
@@ -50,7 +58,7 @@ function ProtectedRoute({
     return <Navigate to="/" replace />;
   }
 
-   // CRITICAL FIX: Redirect if admin required but user is not admin
+  // CRITICAL FIX: Redirect if admin required but user is not admin
   if (requireAdmin && user?.role !== 'admin') {
     console.warn('Access denied: Admin role required');
     return <Navigate to="/" replace />;
@@ -63,118 +71,124 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        
-          <div className="flex flex-col min-h-screen">
-            <Routes>
-              {/* Public Routes */}
-              <Route
-                path="/"
-                element={
-                  <>
-                    <Navbar />
-                    <main className="grow">
-                      <Home />
-                    </main>
-                    <Footer />
-                  </>
-                }
-              />
-              <Route
-                path="/venue"
-                element={
-                  <>
-                    <Navbar />
-                    <main className="grow">
-                      <Venue />
-                    </main>
-                    <Footer />
-                  </>
-                }
-              />
-              <Route
-                path="/menu"
-                element={
-                  <>
-                    <Navbar />
-                    <main className="grow">
-                      <Menu />
-                    </main>
-                    <Footer />
-                  </>
-                }
-              />
-
-              {/* Protected Routes */}
-              <Route
-                path="/booking"
-                element={
-                  <ProtectedRoute>
-                    <>
-                      <Navbar />
-                      <main className="grow">
-                        <Booking />
-                      </main>
-                      <Footer />
-                    </>
-                  </ProtectedRoute>
-                }
-              />
-             
-
-              {/* Auth Routes */}
-              <Route
-                path="/login"
-                element={
-                  <ProtectedRoute requireAuth={false}>
-                    <>
-                      <Navbar />
-                      <main className="grow">
-                        <Login />
-                      </main>
-                      <Footer />
-                    </>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/register"
-                element={
-                  <ProtectedRoute requireAuth={false}>
-                    <>
-                      <Navbar />
-                      <main className="grow">
-                        <Register />
-                      </main>
-                      <Footer />
-                    </>
-                  </ProtectedRoute>
-                }
-              />
-
-              {/* Admin Routes */}
-              <Route
-                path="/admin/*"
-                element={
-                  <ProtectedRoute requireAdmin={true}>
-                    <Admin />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-
-            <ToastContainer
-              position="top-right"
-              autoClose={3000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
+        <div className="flex flex-col min-h-screen">
+          <Routes>
+            {/* Public Routes */}
+            <Route
+              path="/"
+              element={
+                <>
+                  <Navbar />
+                  <main className="grow">
+                    <Home />
+                  </main>
+                  <Footer />
+                </>
+              }
             />
-          </div>
-        
+            <Route
+              path="/venue"
+              element={
+                <>
+                  <Navbar />
+                  <main className="grow">
+                    <Venue />
+                  </main>
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/menu"
+              element={
+                <>
+                  <Navbar />
+                  <main className="grow">
+                    <Menu />
+                  </main>
+                  <Footer />
+                </>
+              }
+            />
+
+            {/* Protected Routes */}
+            <Route
+              path="/booking"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Navbar />
+                    <main className="grow">
+                      <Booking />
+                    </main>
+                    <Footer />
+                  </>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Auth Routes */}
+            <Route
+              path="/login"
+              element={
+                <ProtectedRoute requireAuth={false}>
+                  <>
+                    <Navbar />
+                    <main className="grow">
+                      <Login />
+                    </main>
+                    <Footer />
+                  </>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <ProtectedRoute requireAuth={false}>
+                  <>
+                    <Navbar />
+                    <main className="grow">
+                      <Register />
+                    </main>
+                    <Footer />
+                  </>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Admin Routes */}
+            {/* Admin Routes - CORRECTED */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requireAdmin={true}>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<AdminDashboard />} />
+              <Route path="bookings/*" element={<AdminBookings />} />
+              <Route path="facilities/*" element={<AdminFacilities />} />
+              <Route path="menu/*" element={<AdminMenu />} />
+              <Route path="users/*" element={<AdminUsers />} />
+              <Route path="reports/*" element={<AdminReports />} />
+              <Route path="settings/*" element={<AdminSettings />} />
+            </Route>
+          </Routes>
+
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
+        </div>
       </AuthProvider>
     </BrowserRouter>
   );
