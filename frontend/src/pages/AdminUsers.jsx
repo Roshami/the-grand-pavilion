@@ -15,18 +15,23 @@ export default function AdminUsers() {
     fetchUsers();
   }, [roleFilter]);
 
+  // Fetch users from backend
   const fetchUsers = async () => {
+    setLoading(true);
     try {
-      const params = roleFilter !== 'all' ? `?role=${roleFilter}` : '';
-      const res = await api.get(`/admin/reports/customers${params}`);
-      setUsers(res.data.data?.customers || []);
+      const response = await api.get('/auth/users');
+      let fetchedUsers = response.data.users;
+      if (roleFilter !== 'all') {
+        fetchedUsers = fetchedUsers.filter((user) => user.role === roleFilter);
+      }
+      setUsers(fetchedUsers);
       setLoading(false);
     } catch (err) {
       console.error('Error fetching users:', err);
       setLoading(false);
     }
   };
-
+  
   const updateRole = async (userId, newRole) => {
     if (!window.confirm(`Change user role to ${newRole}?`)) return;
 
