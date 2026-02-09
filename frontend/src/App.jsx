@@ -1,14 +1,12 @@
 import {
-  BrowserRouter as Router,
+  BrowserRouter,
   Routes,
   Route,
   Navigate,
-  BrowserRouter,
 } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-//App.css
 import './App.css';
 
 // Pages
@@ -16,14 +14,8 @@ import Home from './pages/Home';
 import Venue from './pages/Venue';
 import Menu from './pages/Menu';
 import Booking from './pages/Booking';
-
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Admin from './pages/Admin'; // ADD THIS
-
-// Layout Components
-import Navbar from './components/layout/Navbar';
-import Footer from './components/layout/Footer';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminBookings from './pages/AdminBookings';
 import AdminFacilities from './pages/AdminFacilities';
@@ -32,12 +24,14 @@ import AdminUsers from './pages/AdminUsers';
 import AdminReports from './pages/AdminReports';
 import AdminSettings from './pages/AdminSettings';
 import AdminLayout from './components/layout/AdminLayout';
+import Staff from './pages/Staff';
 
-function ProtectedRoute({
-  children,
-  requireAuth = true,
-  requireAdmin = false,
-}) {
+// Layout Components
+import Navbar from './components/layout/Navbar';
+import Footer from './components/layout/Footer';
+
+// ✅ CORRECTED: ProtectedRoute with role handling
+function ProtectedRoute({ children, allowedRoles = null }) {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -48,19 +42,36 @@ function ProtectedRoute({
     );
   }
 
-  // Redirect if not authenticated
-  if (requireAuth && !user) {
+  // Redirect to login if not authenticated
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // Redirect if authenticated but shouldn't be (e.g., login page)
-  if (!requireAuth && user) {
+  // Check role if specified
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    console.warn(
+      `Access denied: Requires role ${allowedRoles.join(' or ')}, got ${user.role}`
+    );
     return <Navigate to="/" replace />;
   }
 
-  // CRITICAL FIX: Redirect if admin required but user is not admin
-  if (requireAdmin && user?.role !== 'admin') {
-    console.warn('Access denied: Admin role required');
+  return children;
+}
+
+// ✅ NEW: PublicRoute for login/register (redirect if authenticated)
+function PublicRoute({ children }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-burgundy-600"></div>
+      </div>
+    );
+  }
+
+  // Redirect to home if already logged in
+  if (user) {
     return <Navigate to="/" replace />;
   }
 
@@ -111,11 +122,11 @@ function App() {
               }
             />
 
-            {/* Protected Routes */}
+            {/* Protected Routes - Customer + Staff + Admin */}
             <Route
               path="/booking"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={['customer', 'staff', 'admin']}>
                   <>
                     <Navbar />
                     <main className="grow">
@@ -127,11 +138,11 @@ function App() {
               }
             />
 
-            {/* Auth Routes */}
+            {/* Public Auth Routes - Only for unauthenticated users */}
             <Route
               path="/login"
               element={
-                <ProtectedRoute requireAuth={false}>
+                <PublicRoute>
                   <>
                     <Navbar />
                     <main className="grow">
@@ -139,13 +150,13 @@ function App() {
                     </main>
                     <Footer />
                   </>
-                </ProtectedRoute>
+                </PublicRoute>
               }
             />
             <Route
               path="/register"
               element={
-                <ProtectedRoute requireAuth={false}>
+                <PublicRoute>
                   <>
                     <Navbar />
                     <main className="grow">
@@ -153,16 +164,15 @@ function App() {
                     </main>
                     <Footer />
                   </>
-                </ProtectedRoute>
+                </PublicRoute>
               }
             />
 
-            {/* Admin Routes */}
-            {/* Admin Routes - CORRECTED */}
+            {/* Admin Routes - ONLY admin */}
             <Route
               path="/admin"
               element={
-                <ProtectedRoute requireAdmin={true}>
+                <ProtectedRoute allowedRoles={['admin']}>
                   <AdminLayout />
                 </ProtectedRoute>
               }
@@ -175,6 +185,16 @@ function App() {
               <Route path="reports/*" element={<AdminReports />} />
               <Route path="settings/*" element={<AdminSettings />} />
             </Route>
+
+            {/* Staff Routes - Staff + Admin */}
+            <Route
+              path="/staff/*"
+              element={
+                <ProtectedRoute allowedRoles={['staff', 'admin']}>
+                  <Staff />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
 
           <ToastContainer

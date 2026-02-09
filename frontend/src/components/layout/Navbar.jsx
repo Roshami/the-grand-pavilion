@@ -57,22 +57,30 @@ export default function Navbar() {
             {user ? (
               <>
                 {/* Admin Link - Only show if user is admin */}
-                {user.role === 'admin' ? (
+                
+                {user.role === 'admin' && (
                   <Link
                     to="/admin"
                     className="text-gray-700 hover:text-burgundy-600 font-medium"
                   >
-                    Admin
-                  </Link>
-                ) : (
-                  <Link
-                    to="/my-bookings"
-                    className="text-gray-700 hover:text-burgundy-600 font-medium"
-                  >
-                    My Bookings
+                    Admin Panel
                   </Link>
                 )}
-
+                {user.role === 'staff' && (
+                  <Link
+                    to="/staff"
+                    className="text-gray-700 hover:text-emerald-600 font-medium"
+                  >
+                    Staff Panel
+                  </Link>
+                )}
+                <Link
+                  to="/my-bookings"
+                  className="text-gray-700 hover:text-burgundy-600 font-medium"
+                >
+                  My Bookings
+                </Link>
+                
                 <button
                   onClick={handleLogout}
                   className="bg-burgundy-600 text-white px-4 py-2 rounded-md hover:bg-burgundy-700 transition"
