@@ -48,7 +48,7 @@ app.use('/api/food', foodRoutes);
 app.use('/api/packages', packageRoutes);
 app.use('/api/bookings', bookingRoutes);
 //app.use('/api/reviews', reviewRoutes);
-//app.use('/api/admin', adminRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {

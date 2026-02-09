@@ -173,3 +173,83 @@ exports.getCustomerReports = async (req, res) => {
     });
   }
 };
+
+// @desc    Get all users (Admin only)
+// @route   GET /api/admin/users
+// @access  Private/Admin
+exports.getUsers = async (req, res) => {
+  try {
+    const { role } = req.query;
+    
+    let query = {};
+    if (role && role !== 'all') {
+      query.role = role;
+    }
+
+    const users = await User.find(query)
+      .select('name email phone role createdAt')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: users
+    });
+  } catch (error) {
+    console.error('Get users error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message || 'Server error fetching users' 
+    });
+  }
+};
+
+// @desc    Update user role (Admin only)
+// @route   PUT /api/admin/users/:id/role
+// @access  Private/Admin
+exports.updateUserRole = async (req, res) => {
+  try {
+    const { role } = req.body;
+    const validRoles = ['customer', 'staff', 'admin'];
+    
+    // Validate role
+    if (!role || !validRoles.includes(role)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Invalid role. Must be customer, staff, or admin' 
+      });
+    }
+
+    // Prevent self-demote
+    if (req.user._id.toString() === req.params.id && role !== 'admin') {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Cannot demote yourself. Please use another admin account.' 
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { role },
+      { new: true, runValidators: true, select: '-password' }
+    );
+
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'User role updated successfully',
+      data: user
+    });
+  } catch (error) {
+    console.error('Update user role error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message || 'Server error updating user role' 
+    });
+  }
+};

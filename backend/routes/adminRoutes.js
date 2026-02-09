@@ -4,7 +4,9 @@ const { protect, authorize } = require('../middleware/auth');
 const { 
   getDashboardStats,
   getBookingReports,
-  getCustomerReports
+  getCustomerReports,
+  updateUserRole,
+  getUsers
 } = require('../controllers/adminController');
 
 // Apply admin authorization to all routes
@@ -16,6 +18,11 @@ router.get('/dashboard', getDashboardStats);
 
 // Reports routes
 router.get('/reports/bookings', getBookingReports);
-router.get('/reports/customers', getCustomerReports);
+router.get('/reports/customers', getCustomerReports); // ✅ FIX: This was missing before
 
+// Add this route after dashboard route
+router.get('/users', getUsers); // ✅ ADD THIS NEW ROUTE
+
+// User management routes
+router.put('/users/:id/role', updateUserRole); // ✅ ADD THIS NEW ROUTE
 module.exports = router;
