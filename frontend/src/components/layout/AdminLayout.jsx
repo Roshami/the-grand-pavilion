@@ -57,6 +57,33 @@ export default function AdminLayout() {
         </div>
       </div>
 
+      {/* ✅ NEW: Back to Home button */}
+      <div className="flex-1 flex justify-between items-center">
+        <div className="text-sm font-semibold leading-6 text-white">
+          Admin Dashboard
+        </div>
+        <Link
+          to="/"
+          className="flex items-center text-cream-100 hover:text-white transition px-3 py-1 rounded-lg hover:bg-burgundy-700"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+            />
+          </svg>
+          Back to Home
+        </Link>
+      </div>
+
       {/* Mobile sidebar */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
@@ -135,19 +162,14 @@ export default function AdminLayout() {
           <div className="flex h-16 shrink-0 items-center">
             {sidebarOpen ? (
               <div className="flex items-center">
-                <div className="bg-burgundy-600 text-cream-50 rounded-lg p-2 mr-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-8 w-8"
+                <div className="bg-burgundy-600 text-cream-50 rounded-lg mr-2">
+                  <img
+                    src="/logo.jpg"
+                    alt="The Grand Pavilion Logo"
+                    className="h-12 w-12 object-cover rounded-lg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                  />
                 </div>
                 <span className="text-xl font-serif font-bold text-cream-50 ml-2">
                   Admin
@@ -175,6 +197,27 @@ export default function AdminLayout() {
             <ul role="list" className="flex flex-1 flex-col gap-y-7">
               <li>
                 <ul role="list" className="-mx-2 space-y-1">
+                  {/* ✅ NEW: Back to Home link at top */}
+                  <Link
+                    to="/"
+                    className="group flex items-center px-2 py-3 text-sm font-medium text-cream-100 hover:bg-burgundy-700 hover:text-white rounded-md mb-2"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                      />
+                    </svg>
+                    Back to Home
+                  </Link>
                   {navigation.map((item) => {
                     const isActive = location.pathname === item.href;
                     return (
@@ -200,6 +243,28 @@ export default function AdminLayout() {
               </li>
 
               <li className="mt-auto">
+                {/* ✅ NEW: Back to Home button at bottom */}
+                <Link
+                  to="/"
+                  className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-cream-100 hover:bg-burgundy-700 hover:text-white"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                    />
+                  </svg>
+                  {sidebarOpen && 'Back to Home'}
+                </Link>
+
                 <button
                   onClick={() => setSidebarOpen(!sidebarOpen)}
                   className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-cream-100 hover:bg-burgundy-700 hover:text-white w-full"

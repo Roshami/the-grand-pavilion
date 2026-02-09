@@ -39,8 +39,10 @@ const foodCategorySchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Index for faster queries
-foodCategorySchema.index({ name: 1 });
+// ❌ REMOVE DUPLICATE INDEX (causes warning)
+// foodCategorySchema.index({ name: 1 });
+
+// ✅ KEEP ONLY THESE (non-duplicate indexes)
 foodCategorySchema.index({ order: 1 });
 foodCategorySchema.index({ isActive: 1 });
 
