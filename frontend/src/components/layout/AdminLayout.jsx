@@ -62,26 +62,7 @@ export default function AdminLayout() {
         <div className="text-sm font-semibold leading-6 text-white">
           Admin Dashboard
         </div>
-        <Link
-          to="/"
-          className="flex items-center text-cream-100 hover:text-white transition px-3 py-1 rounded-lg hover:bg-burgundy-700"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 mr-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-            />
-          </svg>
-          Back to Home
-        </Link>
+        
       </div>
 
       {/* Mobile sidebar */}
@@ -197,27 +178,7 @@ export default function AdminLayout() {
             <ul role="list" className="flex flex-1 flex-col gap-y-7">
               <li>
                 <ul role="list" className="-mx-2 space-y-1">
-                  {/* ✅ NEW: Back to Home link at top */}
-                  <Link
-                    to="/"
-                    className="group flex items-center px-2 py-3 text-sm font-medium text-cream-100 hover:bg-burgundy-700 hover:text-white rounded-md mb-2"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 mr-3"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                      />
-                    </svg>
-                    Back to Home
-                  </Link>
+                  
                   {navigation.map((item) => {
                     const isActive = location.pathname === item.href;
                     return (

@@ -17,7 +17,8 @@ export default function Staff() {
     <StaffLayout>
       <Routes>
         <Route index element={<StaffDashboard />} />
-        <Route path="bookings/*" element={<AdminBookings />} />
+        <Route path="bookings" element={<AdminBookings />} />
+        <Route path="bookings/today" element={<StaffTodayBookings />} />
         <Route path="facilities/*" element={<AdminFacilities />} />
       </Routes>
     </StaffLayout>

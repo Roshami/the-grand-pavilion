@@ -2,10 +2,41 @@ import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import LoadingSpinner from '../components/layout/LoadingSpinner';
-import { CheckCircleIcon, XCircleIcon, ClockIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
-
+import { 
+  CheckCircleIcon, 
+  XCircleIcon, 
+  ClockIcon, 
+  DocumentTextIcon,
+  PlusIcon
+} from '@heroicons/react/24/outline';
+import { useAuth } from '../context/AuthContext'; // ✅ ADD THIS
 
 export default function AdminBookings() {
+  // ✅ GET USER ROLE FOR COLOR SCHEME
+  const { user } = useAuth();
+  const isStaff = user?.role === 'staff';
+  
+  // ✅ DYNAMIC COLOR SCHEME BASED ON ROLE
+  const theme = {
+    primary: isStaff ? 'emerald' : 'burgundy',
+    primaryHover: isStaff ? 'emerald-700' : 'burgundy-700',
+    primaryLight: isStaff ? 'emerald-100' : 'burgundy-100',
+    primaryText: isStaff ? 'text-emerald-800' : 'text-burgundy-800',
+    headerText: isStaff ? 'text-emerald-800' : 'text-burgundy-800',
+    buttonBg: isStaff ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-burgundy-600 hover:bg-burgundy-700',
+    statusColors: {
+      confirmed: isStaff 
+        ? 'bg-green-100 text-green-800' 
+        : 'bg-green-100 text-green-800',
+      pending: isStaff 
+        ? 'bg-yellow-100 text-yellow-800' 
+        : 'bg-yellow-100 text-yellow-800',
+      cancelled: isStaff 
+        ? 'bg-red-100 text-red-800' 
+        : 'bg-red-100 text-red-800'
+    }
+  };
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
@@ -68,7 +99,7 @@ export default function AdminBookings() {
     try {
       await api.put(`/bookings/${bookingId}/cancel`);
       alert('Booking cancelled successfully');
-      navigate('/admin/bookings');
+      navigate(isStaff ? '/staff/bookings' : '/admin/bookings');
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to cancel booking');
     }
@@ -81,8 +112,11 @@ export default function AdminBookings() {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-serif font-bold text-burgundy-800">Booking Details</h1>
-          <Link to="/admin/bookings" className="text-burgundy-600 hover:text-burgundy-800">
+          <h1 className={`text-2xl font-serif font-bold ${theme.headerText}`}>Booking Details</h1>
+          <Link 
+            to={isStaff ? "/staff/bookings" : "/admin/bookings"} 
+            className={`text-${theme.primary}-600 hover:text-${theme.primary}-800`}
+          >
             ← Back to Bookings
           </Link>
         </div>
@@ -103,10 +137,7 @@ export default function AdminBookings() {
                 <div>
                   <span className="text-sm text-gray-500">Status</span>
                   <p className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                    booking.status === 'confirmed' ? 'bg-green-100 text-green-800' :
-                    booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                    booking.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                    'bg-gray-100 text-gray-800'
+                    theme.statusColors[booking.status]
                   }`}>
                     {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                   </p>
@@ -200,7 +231,7 @@ export default function AdminBookings() {
                 </div>
                 <div className="flex justify-between pt-2 border-t border-gray-200">
                   <span className="font-bold">Total:</span>
-                  <span className="font-bold text-lg text-burgundy-600">Rs. {booking.pricing.total.toLocaleString()}</span>
+                  <span className="font-bold text-lg text-gray-900">Rs. {booking.pricing.total.toLocaleString()}</span>
                 </div>
               </div>
             </div>
@@ -209,7 +240,7 @@ export default function AdminBookings() {
               {booking.status === 'pending' && (
                 <button
                   onClick={() => updateBookingStatus(booking._id, 'confirmed')}
-                  className="flex items-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                  className={`flex items-center ${theme.buttonBg} text-white px-4 py-2 rounded-lg transition`}
                 >
                   <CheckCircleIcon className="h-5 w-5 mr-2" />
                   Confirm Booking
@@ -242,11 +273,12 @@ export default function AdminBookings() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-serif font-bold text-burgundy-800">Manage Bookings</h1>
+        <h1 className={`text-2xl font-serif font-bold ${theme.headerText}`}>Manage Bookings</h1>
         <Link 
-          to="/admin/bookings/new" 
-          className="bg-burgundy-600 text-white px-4 py-2 rounded-lg hover:bg-burgundy-700 transition"
+          to={isStaff ? "/staff/bookings/new" : "/admin/bookings/new"} 
+          className={`flex items-center ${theme.buttonBg} text-white px-4 py-2 rounded-lg transition`}
         >
+          <PlusIcon className="h-5 w-5 mr-2" />
           Create New Booking
         </Link>
       </div>
@@ -259,7 +291,7 @@ export default function AdminBookings() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-burgundy-500 focus:border-burgundy-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-burgundy-500 focus:border-burgundy-500"
             >
               <option value="all">All Statuses</option>
               <option value="pending">Pending</option>
@@ -274,7 +306,7 @@ export default function AdminBookings() {
               type="date"
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-burgundy-500 focus:border-burgundy-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-burgundy-500 focus:border-burgundy-500"
             />
           </div>
           <div className="flex items-end">
@@ -336,25 +368,22 @@ export default function AdminBookings() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        booking.status === 'confirmed' ? 'bg-green-100 text-green-800' :
-                        booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                        booking.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                        'bg-gray-100 text-gray-800'
+                        theme.statusColors[booking.status]
                       }`}>
                         {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <Link 
-                        to={`/admin/bookings/${booking._id}`}
-                        className="text-burgundy-600 hover:text-burgundy-900 mr-3"
+                        to={`/${isStaff ? 'staff' : 'admin'}/bookings/${booking._id}`}
+                        className={`text-${theme.primary}-600 hover:text-${theme.primary}-900 mr-3`}
                       >
                         View
                       </Link>
                       {booking.status === 'pending' && (
                         <button
                           onClick={() => updateBookingStatus(booking._id, 'confirmed')}
-                          className="text-green-600 hover:text-green-900 mr-3"
+                          className={`text-green-600 hover:text-green-900 mr-3`}
                         >
                           Confirm
                         </button>

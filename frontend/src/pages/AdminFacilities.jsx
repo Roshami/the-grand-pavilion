@@ -1,10 +1,40 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import LoadingSpinner from '../components/layout/LoadingSpinner';
-import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { 
+  PlusIcon, 
+  PencilIcon, 
+  TrashIcon,
+  BuildingLibraryIcon
+} from '@heroicons/react/24/outline';
+import { useAuth } from '../context/AuthContext'; // ✅ ADD THIS
 
 export default function AdminFacilities() {
+  // ✅ GET USER ROLE FOR COLOR SCHEME
+  const { user } = useAuth();
+  const isStaff = user?.role === 'staff';
+  
+  // ✅ DYNAMIC COLOR SCHEME BASED ON ROLE
+  const theme = {
+    primary: isStaff ? 'emerald' : 'burgundy',
+    primaryHover: isStaff ? 'emerald-700' : 'burgundy-700',
+    primaryLight: isStaff ? 'emerald-100' : 'burgundy-100',
+    primaryText: isStaff ? 'text-emerald-800' : 'text-burgundy-800',
+    headerText: isStaff ? 'text-emerald-800' : 'text-burgundy-800',
+    buttonBg: isStaff ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-burgundy-600 hover:bg-burgundy-700',
+    typeColors: {
+      table: 'bg-blue-100 text-blue-800',
+      hall: 'bg-purple-100 text-purple-800',
+      room: 'bg-green-100 text-green-800',
+      outdoor: 'bg-amber-100 text-amber-800'
+    },
+    statusColors: {
+      available: 'bg-green-100 text-green-800',
+      unavailable: 'bg-red-100 text-red-800'
+    }
+  };
+
   const navigate = useNavigate();
   const [facilities, setFacilities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,10 +75,10 @@ export default function AdminFacilities() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-serif font-bold text-burgundy-800">Manage Facilities</h1>
+        <h1 className={`text-2xl font-serif font-bold ${theme.headerText}`}>Manage Facilities</h1>
         <button 
-          onClick={() => navigate('/admin/facilities/new')}
-          className="flex items-center bg-burgundy-600 text-white px-4 py-2 rounded-lg hover:bg-burgundy-700 transition"
+          onClick={() => navigate(isStaff ? '/staff/facilities/new' : '/admin/facilities/new')}
+          className={`flex items-center ${theme.buttonBg} text-white px-4 py-2 rounded-lg transition`}
         >
           <PlusIcon className="h-5 w-5 mr-2" />
           Add New Facility
@@ -57,14 +87,19 @@ export default function AdminFacilities() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {facilities.map((facility) => (
-          <div key={facility._id} className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
+          <div 
+            key={facility._id} 
+            className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow"
+          >
             <div className="p-5">
               <div className="flex justify-between items-start">
                 <div>
                   <div className="flex items-center">
-                    <h3 className="text-xl font-bold text-burgundy-800">{facility.name}</h3>
+                    <h3 className="text-xl font-bold text-gray-800">{facility.name}</h3>
                     <span className={`ml-3 px-2 py-1 rounded-full text-xs font-medium ${
-                      facility.isAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      facility.isAvailable 
+                        ? theme.statusColors.available 
+                        : theme.statusColors.unavailable
                     }`}>
                       {facility.isAvailable ? 'Available' : 'Unavailable'}
                     </span>
@@ -72,10 +107,7 @@ export default function AdminFacilities() {
                   <p className="text-gray-600 mt-1 capitalize">{facility.type}</p>
                 </div>
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  facility.type === 'table' ? 'bg-blue-100 text-blue-800' :
-                  facility.type === 'hall' ? 'bg-purple-100 text-purple-800' :
-                  facility.type === 'room' ? 'bg-green-100 text-green-800' :
-                  'bg-amber-100 text-amber-800'
+                  theme.typeColors[facility.type] || 'bg-gray-100 text-gray-800'
                 }`}>
                   {facility.type === 'table' ? 'Table' : 'Hall'}
                 </span>
@@ -99,7 +131,10 @@ export default function AdminFacilities() {
                   <p className="text-sm text-gray-500 mb-2">Features</p>
                   <div className="flex flex-wrap gap-1">
                     {facility.features.map((feature, index) => (
-                      <span key={index} className="text-xs bg-cream-100 text-burgundy-700 px-2 py-1 rounded">
+                      <span 
+                        key={index} 
+                        className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded"
+                      >
                         {feature}
                       </span>
                     ))}
@@ -109,20 +144,22 @@ export default function AdminFacilities() {
               
               <div className="mt-5 pt-4 border-t border-gray-200 flex justify-between">
                 <button
-                  onClick={() => navigate(`/admin/facilities/edit/${facility._id}`)}
-                  className="flex items-center text-burgundy-600 hover:text-burgundy-800"
+                  onClick={() => navigate(`/${isStaff ? 'staff' : 'admin'}/facilities/edit/${facility._id}`)}
+                  className={`flex items-center ${theme.primaryText} hover:text-${theme.primary}-800`}
                 >
                   <PencilIcon className="h-4 w-4 mr-1" />
                   Edit
                 </button>
-                <button
-                  onClick={() => handleDelete(facility._id)}
-                  disabled={deletingId === facility._id}
-                  className="flex items-center text-red-600 hover:text-red-800 disabled:opacity-50"
-                >
-                  <TrashIcon className="h-4 w-4 mr-1" />
-                  {deletingId === facility._id ? 'Deleting...' : 'Delete'}
-                </button>
+                {!isStaff && ( // ✅ Staff cannot delete facilities
+                  <button
+                    onClick={() => handleDelete(facility._id)}
+                    disabled={deletingId === facility._id}
+                    className="flex items-center text-red-600 hover:text-red-800 disabled:opacity-50"
+                  >
+                    <TrashIcon className="h-4 w-4 mr-1" />
+                    {deletingId === facility._id ? 'Deleting...' : 'Delete'}
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -131,12 +168,14 @@ export default function AdminFacilities() {
       
       {facilities.length === 0 && (
         <div className="text-center py-12 bg-white rounded-xl shadow-md">
-          <div className="text-4xl mb-4">🏛️</div>
+          <div className="text-4xl mb-4">
+            <BuildingLibraryIcon className={`h-16 w-16 mx-auto ${theme.primaryText}`} />
+          </div>
           <h3 className="text-xl font-bold text-gray-800 mb-2">No Facilities Added</h3>
           <p className="text-gray-600 mb-6">Add your first table or hall to get started</p>
           <button 
-            onClick={() => navigate('/admin/facilities/new')}
-            className="bg-burgundy-600 text-white px-6 py-3 rounded-lg hover:bg-burgundy-700 transition font-medium"
+            onClick={() => navigate(isStaff ? '/staff/facilities/new' : '/admin/facilities/new')}
+            className={`bg-${theme.primary}-600 text-white px-6 py-3 rounded-lg hover:bg-${theme.primary}-700 transition font-medium`}
           >
             Add Facility
           </button>

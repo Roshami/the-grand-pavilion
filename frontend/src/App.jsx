@@ -1,9 +1,4 @@
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-} from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -29,6 +24,9 @@ import Staff from './pages/Staff';
 // Layout Components
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import StaffLayout from './components/layout/StaffLayout';
+import StaffDashboard from './pages/StaffDashboard';
+import StaffTodayBookings from './pages/StaffTodayBookings';
 
 // ✅ CORRECTED: ProtectedRoute with role handling
 function ProtectedRoute({ children, allowedRoles = null }) {
@@ -50,7 +48,7 @@ function ProtectedRoute({ children, allowedRoles = null }) {
   // Check role if specified
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     console.warn(
-      `Access denied: Requires role ${allowedRoles.join(' or ')}, got ${user.role}`
+      `Access denied: Requires role ${allowedRoles.join(' or ')}, got ${user.role}`,
     );
     return <Navigate to="/" replace />;
   }
@@ -186,15 +184,20 @@ function App() {
               <Route path="settings/*" element={<AdminSettings />} />
             </Route>
 
-            {/* Staff Routes - Staff + Admin */}
+            {/* ✅ CORRECTED: Staff Routes with NESTED children */}
             <Route
-              path="/staff/*"
+              path="/staff"
               element={
                 <ProtectedRoute allowedRoles={['staff', 'admin']}>
-                  <Staff />
+                  <StaffLayout />
                 </ProtectedRoute>
               }
-            />
+            >
+              <Route index element={<StaffDashboard />} />
+              <Route path="bookings/today" element={<StaffTodayBookings />} />
+              <Route path="bookings/*" element={<AdminBookings />} />
+              <Route path="facilities/*" element={<AdminFacilities />} />
+            </Route>
           </Routes>
 
           <ToastContainer
